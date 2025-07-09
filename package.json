@@ -1,0 +1,14 @@
+{
+  "name": "analisi_dati",
+  "version": "1.0.0",
+  "description": "Applicazione Node per la lettura di dati e analisi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mapo",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.18.1"
+  }
+}
