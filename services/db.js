@@ -6,6 +6,52 @@ const connection = db.createConnection({
   user: "root",
   database: "analisi_dati", // Commentato per creare il database se non esiste
 });
+
+const dati = [
+  [
+    2,
+    2,
+    "Frase di oggi",
+    "Il successo è la somma di piccoli sforzi ripetuti giorno dopo giorno.",
+  ],
+  [
+    3,
+    3,
+    "Frase di oggi",
+    "Non arrenderti mai, perché quando pensi che sia tutto finito, è il momento in cui tutto ha inizio.",
+  ],
+  [4, 4, "Frase di oggi", "Credi in te stesso e tutto sarà possibile."],
+  [
+    5,
+    5,
+    "Frase di oggi",
+    "Le grandi cose non vengono mai dalla zona di comfort.",
+  ],
+  [
+    6,
+    6,
+    "Frase di oggi",
+    "Ogni giorno è una nuova opportunità per ricominciare.",
+  ],
+  [
+    7,
+    7,
+    "Frase di oggi",
+    "La determinazione di oggi costruisce il successo di domani.",
+  ],
+  [
+    8,
+    8,
+    "Frase di oggi",
+    "Non aspettare il momento perfetto, cogli l’attimo e rendilo perfetto.",
+  ],
+  [
+    9,
+    9,
+    "Frase di oggi",
+    "Il futuro appartiene a chi crede nella bellezza dei propri sogni.",
+  ],
+];
 connection.connect((err) => {
   if (err) {
     console.error("Errore di connessione al database:", err);
@@ -18,6 +64,13 @@ connection.connect((err) => {
 
     // creazione_database();
     creazione_tabella();
+    // inserimento_messaggio(
+    //   1,
+    //   1,
+    //   "Benvenuto",
+    //   "Ciao, questo è un messaggio di prova"
+    // );
+    inserimento_multiplo();
     chiusura();
   }
 });
@@ -103,4 +156,39 @@ function creazione_tabella() {
       console.log("Tabella creata con successo:", results);
     }
   );
+}
+
+function inserimento_messaggio(
+  id_mittente,
+  id_destinatario,
+  oggetto,
+  messaggio
+) {
+  connection.query(
+    "INSERT INTO messaggi (id_mittente, id_destinatario, oggetto, messaggio) VALUES (?, ?, ?, ?)",
+    [id_mittente, id_destinatario, oggetto, messaggio],
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante l'inserimento del messaggio:", err);
+        return;
+      }
+      console.log("Messaggio inserito con successo:", results);
+    }
+  );
+}
+
+function inserimento_multiplo() {
+  dati.forEach((d) => {
+    connection.query(
+      "INSERT INTO messaggi (id_mittente, id_destinatario, oggetto, messaggio) VALUES (?, ?, ?, ?)",
+      d,
+      (err, results, fields) => {
+        if (err) {
+          console.error("Errore durante l'inserimento del messaggio:", err);
+          return;
+        }
+        console.log("Messaggio inserito con successo:", results);
+      }
+    );
+  });
 }
