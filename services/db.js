@@ -96,7 +96,8 @@ connection.connect((err) => {
     // disattiva([5, 9, 7]);
     // cancellazione(5);
     cancellazione_filtro("Mario", "Rossi");
-    chiusura();
+    spostare_dati();
+    // chiusura();
   }
 });
 console.log(
@@ -363,4 +364,59 @@ function cancellazione_filtro(nome, cognome) {
       console.log("Cancellazione effettuata con successo:", results);
     }
   );
+}
+
+function spostare_dati() {
+  const query = `CREATE TABLE IF NOT EXISTS messaggi_archiviati LIKE messaggi`;
+
+  connection.query(query, (err, results, fields) => {
+    if (err) {
+      console.error("Errore durante la creazione della tabella:", err);
+      return;
+    }
+    console.log("Tabella creata con successo:", results);
+    spostamento_dati();
+  });
+}
+
+function spostamento_dati() {
+  connection.beginTransaction((err) => {
+    if (err) {
+      console.error("Errore durante l'inizio della transazione:", err);
+      return;
+    }
+    connection.query(
+      "INSERT INTO messaggi_archiviati SELECT * FROM messaggi WHERE attivo = FALSE",
+      (err, results, fields) => {
+        if (err) {
+          return connection.rollback(() => {
+            console.error("Errore durante lo spostamento dei dati:", err);
+            chiusura();
+          });
+        }
+        connection.query(
+          "DELETE FROM messaggi WHERE attivo = FALSE",
+          (err, results, fields) => {
+            if (err) {
+              return connection.rollback(() => {
+                console.error("Errore durante la cancellazione dei dati:", err);
+                chiusura();
+              });
+            }
+            connection.commit((err) => {
+              if (err) {
+                return connection.rollback(() => {
+                  console.error(
+                    "Errore durante il commit della transazione:",
+                    err
+                  );
+                });
+              }
+              console.log("Dati spostati e cancellati con successo!");
+            });
+          }
+        );
+      }
+    );
+  });
 }
