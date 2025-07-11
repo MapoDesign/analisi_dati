@@ -90,7 +90,12 @@ connection.connect((err) => {
     // creazione_tabella_utenti();
     // inserimento_multiplo_cognomi_nomi();
     // ricerca();
-    salvataggio_dati();
+    // salvataggio_dati();
+    // modifica("id_destinatario", 3, 6);
+    // aggiunta_campo();
+    // disattiva([5, 9, 7]);
+    // cancellazione(5);
+    cancellazione_filtro("Mario", "Rossi");
     chiusura();
   }
 });
@@ -291,6 +296,71 @@ function salvataggio_dati() {
           }
         );
       }
+    }
+  );
+}
+function modifica(campo, valore, id) {
+  connection.query(
+    `UPDATE messaggi SET ${campo} = ? WHERE id = ?`,
+    [valore, id],
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante la modifica:", err);
+        return;
+      }
+      console.log("Modifica effettuata con successo:", results);
+    }
+  );
+}
+
+function aggiunta_campo() {
+  connection.query(
+    "ALTER TABLE messaggi ADD COLUMN attivo BOOLEAN DEFAULT TRUE",
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante l'aggiunta del campo:", err);
+        return;
+      }
+      console.log("Campo aggiunto con successo:", results);
+    }
+  );
+}
+
+function disattiva(id) {
+  query = "UPDATE messaggi SET attivo = FALSE WHERE id in (?)";
+  connection.query(query, [id], (err, results, fields) => {
+    if (err) {
+      console.error("Errore durante la disattivazione:", err);
+      return;
+    }
+    console.log("Disattivazione effettuata con successo:", results);
+  });
+}
+
+function cancellazione(id) {
+  connection.query(
+    "DELETE FROM messaggi WHERE id = ?",
+    [id],
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante la cancellazione:", err);
+        return;
+      }
+      console.log("Cancellazione effettuata con successo:", results);
+    }
+  );
+}
+
+function cancellazione_filtro(nome, cognome) {
+  connection.query(
+    "DELETE FROM utenti WHERE nome = ? AND cognome = ?",
+    [nome, cognome],
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante la cancellazione:", err);
+        return;
+      }
+      console.log("Cancellazione effettuata con successo:", results);
     }
   );
 }
