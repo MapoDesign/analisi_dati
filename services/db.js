@@ -1,4 +1,5 @@
 db = require("mysql");
+fs = require("fs");
 const connection = db.createConnection({
   connectionLimit: 5,
   host: "localhost",
@@ -52,6 +53,21 @@ const dati = [
     "Il futuro appartiene a chi crede nella bellezza dei propri sogni.",
   ],
 ];
+
+const cognomi = ["Rossi", "Bianchi", "Verdi", "Neri", "Gialli", "Blu"];
+
+const nomi = ["Mario", "Giovanni", "Luca", "Marco", "Andrea", "Francesco"];
+
+const prefissi = [338, 339, 340, 347, 348];
+
+function generaNumeroTelefono() {
+  const prefisso = prefissi[Math.floor(Math.random() * prefissi.length)];
+  const numero = Math.floor(Math.random() * 10000000)
+    .toString()
+    .padStart(7, "0");
+  return `${prefisso}${numero}`;
+}
+
 connection.connect((err) => {
   if (err) {
     console.error("Errore di connessione al database:", err);
@@ -63,14 +79,18 @@ connection.connect((err) => {
     );
 
     // creazione_database();
-    creazione_tabella();
+    // creazione_tabella();
     // inserimento_messaggio(
     //   1,
     //   1,
     //   "Benvenuto",
     //   "Ciao, questo è un messaggio di prova"
     // );
-    inserimento_multiplo();
+    // inserimento_multiplo();
+    // creazione_tabella_utenti();
+    // inserimento_multiplo_cognomi_nomi();
+    // ricerca();
+    salvataggio_dati();
     chiusura();
   }
 });
@@ -191,4 +211,86 @@ function inserimento_multiplo() {
       }
     );
   });
+}
+
+function inserimento_multiplo_cognomi_nomi() {
+  for (let i = 0; i < 100; i++) {
+    const cognome = cognomi[Math.floor(Math.random() * cognomi.length)];
+    const nome = nomi[Math.floor(Math.random() * nomi.length)];
+    const numeroTelefono = generaNumeroTelefono();
+    connection.query(
+      "INSERT INTO utenti (cognome, nome, numeroTelefono) VALUES (?, ?, ?)",
+      [cognome, nome, numeroTelefono],
+      (err, results, fields) => {
+        if (err) {
+          console.error("Errore durante l'inserimento dell'utente:", err);
+          return;
+        }
+        console.log("Utente inserito con successo:", results);
+      }
+    );
+  }
+}
+
+function creazione_tabella_utenti() {
+  connection.query(
+    `CREATE TABLE IF NOT EXISTS utenti (\
+    id int(10) UNSIGNED NOT NULL AUTO_INCREMENT, \
+    cognome VARCHAR(255) NOT NULL, \
+    nome VARCHAR(255) NOT NULL, \
+    numeroTelefono VARCHAR(15) NOT NULL, \
+    PRIMARY KEY (id) \
+    )\
+    ENGINE=MyISAM DEFAULT CHARSET=utf8mb4`,
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante la creazione della tabella:", err);
+        return;
+      }
+      console.log("Tabella creata con successo:", results);
+    }
+  );
+}
+
+function ricerca() {
+  connection.query(
+    "SELECT * FROM messaggi WHERE oggetto LIKE ?",
+    ["%Frase di oggi%"],
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante la ricerca:", err);
+        return;
+      }
+      console.log("Risultati della ricerca:", results);
+    }
+  );
+}
+
+function salvataggio_dati() {
+  connection.query(
+    "SELECT * FROM utenti ORDER BY COGNOME DESC",
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante la ricerca:", err);
+        return;
+      }
+      console.log("Risultati della ricerca:", results);
+      for (x of results) {
+        console.log(
+          `Cognome: ${x.cognome}, Nome: ${x.nome}, Telefono: ${x.numeroTelefono}`
+        );
+        fs.appendFile(
+          "utenti.txt",
+          `Cognome: ${x.cognome}, Nome: ${x.nome}, Telefono: ${x.numeroTelefono}\n`,
+          (err) => {
+            if (err) {
+              console.error("Errore durante il salvataggio dei dati:", err);
+              return;
+            }
+            console.log("Dati salvati correttamente nel file utenti.txt");
+          }
+        );
+      }
+    }
+  );
 }
