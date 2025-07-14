@@ -35,10 +35,26 @@ function inserimento_multiplo_cognomi_nomi(cognomi, nomi) {
   }
 }
 
+function incrocio_dati() {
+  connection.query(
+    "SELECT u.cognome, u.nome, count(messaggio) as totale FROM utenti u LEFT JOIN messaggi m ON u.id = m.id_mittente \
+    GROUP BY u.id \
+    ORDER BY totale DESC",
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante l'incrociamento:", err);
+        return;
+      }
+      console.log("Risultati dell'incrociamento:", results);
+    }
+  );
+}
+
 // ...Aggiungi qui tutte le altre funzioni relative agli utenti...
 
 module.exports = {
   creazione_tabella_utenti,
   inserimento_multiplo_cognomi_nomi,
+  incrocio_dati,
   // ...altre funzioni...
 };

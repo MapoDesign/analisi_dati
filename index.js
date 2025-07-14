@@ -14,7 +14,8 @@ db.connect((err) => {
   } else {
     console.log("Connessione al database riuscita!");
     // Qui puoi avviare le tue funzioni solo dopo la connessione
-    messaggi.creazione_tabella("pippo");
+    // messaggi.creazione_tabella("pippo");
+    utenti.incrocio_dati();
     // Avvia qui anche il server, se vuoi che parta solo dopo la connessione
     require("./services/server");
   }
