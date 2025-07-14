@@ -1,4 +1,4 @@
-db = require("mysql");
+db = require("mysql2");
 fs = require("fs");
 const connection = db.createConnection({
   connectionLimit: 5,
@@ -95,9 +95,10 @@ connection.connect((err) => {
     // aggiunta_campo();
     // disattiva([5, 9, 7]);
     // cancellazione(5);
-    cancellazione_filtro("Mario", "Rossi");
-    spostare_dati();
-    // chiusura();
+    // cancellazione_filtro("Mario", "Rossi");
+    // spostare_dati();
+    incrociamento();
+    chiusura();
   }
 });
 console.log(
@@ -419,4 +420,17 @@ function spostamento_dati() {
       }
     );
   });
+}
+
+function incrociamento() {
+  connection.query(
+    "SELECT oggetto, messaggio, cognome, nome FROM messaggi m JOIN utenti ON id_mittente = utenti.id",
+    (err, results, fields) => {
+      if (err) {
+        console.error("Errore durante l'incrociamento:", err);
+        return;
+      }
+      console.log("Risultati dell'incrociamento:", results);
+    }
+  );
 }
